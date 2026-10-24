@@ -315,10 +315,14 @@
       view.margins.bottom = 8;
     }
     view.margins.left = 58; // clear of the kit's round buttons in the middle of the left edge
+    view.margins.right = w < 900 ? 8 : 12;
     view.alignBottom = playing;
-    view.margins.right = short ? 150 : w < 900 ? 8 : 12;
-    if (short && playing) view.margins.right = Math.min(150, w * 0.2);
-    if (!playing) view.margins.right = 8;
+    if (short && playing) {
+      // a phone on its side: the score card on the left, the buttons on the right, the field between them
+      const r = (id) => $(id).getBoundingClientRect();
+      view.margins.left = Math.max(58, r('pcard').right + 6);
+      view.margins.right = Math.max(8, w - Math.min(r('callBtn').left, document.querySelector('#hud .mid').getBoundingClientRect().left) + 6);
+    }
     view.fit(true);
     const strip = $('strip');
     strip.classList.toggle('hidden', !(playing && G.touchOn && G.screen === 'play'));

@@ -126,8 +126,8 @@
   View.prototype.buildStage = function () {
     const g = new T.Group();
     const sky = A.backdrop();
-    const back = new T.Mesh(new T.PlaneGeometry(100, 62), new T.MeshLambertMaterial({ map: sky, emissive: '#ffffff', emissiveMap: sky, emissiveIntensity: 0.6 }));
-    back.position.set(W / 2, H / 2 + 2, -2.4);
+    const back = new T.Mesh(new T.PlaneGeometry(100, 100), new T.MeshLambertMaterial({ map: sky, emissive: '#ffffff', emissiveMap: sky, emissiveIntensity: 0.6 }));
+    back.position.set(W / 2, H / 2 + 2, -2.4); // the picture's middle band lands where the old 100 x 62 one did
     back.receiveShadow = true;
     g.add(back);
     // toy-cube pillars down both sides

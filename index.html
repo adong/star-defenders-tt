@@ -128,7 +128,7 @@
   #banner p { font-weight: 700; font-size: clamp(14px, 2.1vw, 19px); opacity: 0.95; }
 
   /* ---------- screens ---------- */
-  .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 18px;
+  .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 14px; padding: 18px;
     background: radial-gradient(ellipse at center, rgba(20,18,40,0.25), rgba(20,18,40,0.72)); overflow-y: auto; }
   .screen > * { flex-shrink: 0; }
   .screen > :first-child { margin-top: auto; }
@@ -192,12 +192,20 @@
   /* short screens (a phone on its side): the HUD goes down the sides, next to the field */
   @media (max-height: 520px) {
     .screen { gap: 7px; padding: 8px; }
-    .logo { font-size: clamp(30px, 10vh, 56px); }
+    .logo { font-size: clamp(26px, 9vh, 50px); -webkit-text-stroke-width: 2px; text-shadow: 0 4px 0 var(--ink); }
     .sub { font-size: 15px; }
-    .kid { width: 140px; padding: 6px 8px 8px; border-radius: 18px; }
-    .kid img { width: 58px; height: 58px; }
-    .kid b { font-size: 20px; }
-    .big { font-size: 18px; padding: 8px 18px; }
+    .kid { width: auto; flex-direction: row; gap: 8px; padding: 4px 14px 4px 4px; border-radius: 999px; }
+    .kid img { width: 46px; height: 46px; }
+    .kid b { font-size: 18px; margin: 0; }
+    .kid small { font-size: 11px; }
+    .picks { gap: 10px; }
+    .opts { gap: 8px; }
+    .seg button, .chip { font-size: 13px; padding: 6px 12px; }
+    .best { font-size: 12px; }
+    .toast { font-size: 14px; padding: 3px 12px; }
+    .toast.huge { font-size: 18px; }
+    .big { font-size: 16px; padding: 6px 16px; border-width: 3px; box-shadow: 0 3px 0 var(--ink); }
+    .big small { font-size: 10px; }
     .big.two img { width: 32px; height: 32px; }
     .keys { display: none; }
     .card { padding: 12px 18px; gap: 8px; }

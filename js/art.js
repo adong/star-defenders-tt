@@ -19,58 +19,58 @@
   const SPRINKLE = ['#ff5a8a', '#ffd23f', '#4fd8ff', '#8cff6b', '#c38bff'];
 
   // ---------------------------------------------------------------- the backdrop: a friendly night sky
+  // Square, so the planets stay round: the picture is the middle band (rows OY..OY+640); above and below it the sky
+  // carries on (a tall phone shows more sky than a wide screen).
   function backdrop() {
     return once('bg', () => {
-      const BW = 1024, BH = 640;
+      const BW = 1024, BH = 1024, OY = 192;
       const [c, g] = makeCanvas(BW, BH);
-      const gr = g.createLinearGradient(0, 0, 0, BH);
+      g.fillStyle = '#1d1b52';
+      g.fillRect(0, 0, BW, OY + 1);
+      g.fillStyle = '#6a3d9a';
+      g.fillRect(0, OY + 639, BW, BH - OY - 639);
+      const gr = g.createLinearGradient(0, OY, 0, OY + 640);
       gr.addColorStop(0, '#1d1b52');
       gr.addColorStop(0.55, '#3b2a7a');
       gr.addColorStop(1, '#6a3d9a');
       g.fillStyle = gr;
-      g.fillRect(0, 0, BW, BH);
+      g.fillRect(0, OY, BW, 640);
       let seed = 11;
       const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
       // soft clouds of colour
       for (const [x, y, r, col] of [[180, 160, 260, 'rgba(255,120,200,0.16)'], [820, 420, 300, 'rgba(90,200,255,0.14)'], [520, 80, 220, 'rgba(160,120,255,0.18)']]) {
-        const rg = g.createRadialGradient(x, y, 0, x, y, r);
+        const rg = g.createRadialGradient(x, y + OY, 0, x, y + OY, r);
         rg.addColorStop(0, col);
         rg.addColorStop(1, 'rgba(0,0,0,0)');
         g.fillStyle = rg;
         g.fillRect(0, 0, BW, BH);
       }
-      // stars and twinkles
-      for (let i = 0; i < 360; i++) {
-        g.fillStyle = `rgba(255,255,255,${0.35 + rnd() * 0.65})`;
-        const r = rnd() < 0.08 ? 1.9 : 0.9;
+      // stars (round dots only: nothing that could look like a star-pop or a sprinkle)
+      for (let i = 0; i < 560; i++) {
+        g.fillStyle = `rgba(255,255,255,${0.3 + rnd() * 0.6})`;
+        const r = rnd() < 0.08 ? 1.8 : 0.9;
         g.beginPath(); g.arc(rnd() * BW, rnd() * BH, r, 0, Math.PI * 2); g.fill();
-      }
-      g.strokeStyle = 'rgba(255,240,180,0.9)';
-      g.lineWidth = 2;
-      for (let i = 0; i < 14; i++) {
-        const x = rnd() * BW, y = rnd() * BH * 0.8, s = 4 + rnd() * 4;
-        g.beginPath(); g.moveTo(x - s, y); g.lineTo(x + s, y); g.moveTo(x, y - s); g.lineTo(x, y + s); g.stroke();
       }
       // a smiling candy moon
       g.fillStyle = '#ffe9a8';
-      g.beginPath(); g.arc(880, 110, 46, 0, Math.PI * 2); g.fill();
+      g.beginPath(); g.arc(880, OY + 110, 46, 0, Math.PI * 2); g.fill();
       g.fillStyle = 'rgba(220,180,100,0.45)';
-      for (const [x, y, r] of [[862, 92, 9], [900, 130, 11], [895, 88, 5]]) { g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); }
+      for (const [x, y, r] of [[862, 92, 9], [900, 130, 11], [895, 88, 5]]) { g.beginPath(); g.arc(x, y + OY, r, 0, Math.PI * 2); g.fill(); }
       g.strokeStyle = '#a5753a';
       g.lineWidth = 3;
-      g.beginPath(); g.arc(872, 112, 14, 0.2, Math.PI - 0.2); g.stroke();
+      g.beginPath(); g.arc(872, OY + 112, 14, 0.2, Math.PI - 0.2); g.stroke();
       // a ringed planet and a little striped one
       g.fillStyle = '#ff9a6b';
-      g.beginPath(); g.arc(130, 470, 38, 0, Math.PI * 2); g.fill();
+      g.beginPath(); g.arc(130, OY + 470, 38, 0, Math.PI * 2); g.fill();
       g.strokeStyle = 'rgba(255,230,160,0.95)';
       g.lineWidth = 6;
-      g.beginPath(); g.ellipse(130, 470, 68, 14, -0.3, 0, Math.PI * 2); g.stroke();
+      g.beginPath(); g.ellipse(130, OY + 470, 68, 14, -0.3, 0, Math.PI * 2); g.stroke();
       g.save();
-      g.beginPath(); g.arc(640, 540, 26, 0, Math.PI * 2); g.clip();
-      for (let i = 0; i < 6; i++) { g.fillStyle = i % 2 ? '#7ae7ff' : '#4fb2ff'; g.fillRect(600, 512 + i * 10, 80, 10); }
+      g.beginPath(); g.arc(640, OY + 560, 26, 0, Math.PI * 2); g.clip();
+      for (let i = 0; i < 6; i++) { g.fillStyle = i % 2 ? '#7ae7ff' : '#4fb2ff'; g.fillRect(600, OY + 532 + i * 10, 80, 10); }
       g.restore();
       g.font = `30px ${G.EMOJI_FONT}`;
-      for (const [e, x, y] of [['🪐', 320, 120], ['🛸', 560, 420]]) g.fillText(e, x, y);
+      g.fillText('🪐', 320, OY + 120);
       return toTexture(c);
     });
   }
