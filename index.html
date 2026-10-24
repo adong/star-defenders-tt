@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#4fd8ff">
+<title>TT Star Defenders · Teddy &amp; Tommy</title>
+<!-- The game's icon: the same emoji as its card on the dashboard, on a coloured tile. It's the browser tab's icon (the SVG, then
+     a PNG drawn below) and the iPad home screen's (apple-touch-icon). The device's own emoji font draws it: no image files. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20x='2'%20y='2'%20width='60'%20height='60'%20rx='14'%20fill='%234fd8ff'%20stroke='%2314121f'%20stroke-width='4'/%3E%3Ctext%20x='32'%20y='44'%20font-size='36'%20text-anchor='middle'%3E%F0%9F%91%BE%3C/text%3E%3C/svg%3E">
+<script>
+  (function (emoji, tile) {
+    function draw(size, framed) {
+      const c = document.createElement('canvas');
+      c.width = c.height = size;
+      const g = c.getContext('2d');
+      if (!g) return '';
+      const u = size / 64;
+      g.fillStyle = tile;
+      if (framed) { // the tab: a rounded tile with the dashboard's dark outline
+        g.beginPath();
+        if (g.roundRect) g.roundRect(2 * u, 2 * u, 60 * u, 60 * u, 14 * u); else g.rect(2 * u, 2 * u, 60 * u, 60 * u);
+        g.fill();
+        g.lineWidth = 4 * u;
+        g.strokeStyle = '#14121f';
+        g.stroke();
+      } else g.fillRect(0, 0, size, size); // the home screen: iOS rounds the corners itself
+      g.font = `${Math.round(size * (framed ? 0.56 : 0.62))}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+      g.textAlign = 'center';
+      const m = g.measureText(emoji);
+      const up = m.actualBoundingBoxAscent || size * 0.4, down = m.actualBoundingBoxDescent || 0;
+      g.fillText(emoji, size / 2, size / 2 + (up - down) / 2);
+      try { return c.toDataURL('image/png'); } catch (e) { return ''; }
+    }
+    const tab = draw(64, true), home = draw(180, false);
+    if (tab) document.querySelector('link[rel="icon"]').href = tab;
+    if (home) {
+      const l = document.createElement('link');
+      l.rel = 'apple-touch-icon';
+      l.href = home;
+      document.head.appendChild(l);
+    }
+  })('👾', '#4fd8ff');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Rubik:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teddy: #3d9bff;
+    --teddy-l: #9fd0ff;
+    --tommy: #2fd6a2;
+    --tommy-l: #9ff2d6;
+    --yellow: #ffd23f;
+    --pink: #ff7ab8;
+    --aqua: #4fd8ff;
+    --ink: #14121f;
+    --display: 'Bungee', 'Arial Black', Impact, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden; background: #1d1b52; color: #fff;
+    font-family: 'Rubik', system-ui, -apple-system, sans-serif;
+    touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  }
+  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  .hidden { display: none !important; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  img { -webkit-user-drag: none; }
+
+  /* ---------- HUD ---------- */
+  #hud { position: fixed; inset: 0; pointer-events: none; }
+  .top { position: absolute; left: 0; right: 0; top: 0; padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 0 max(10px, env(safe-area-inset-left));
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; gap: 8px; }
+  .pcard { grid-column: 1; grid-row: 1; justify-self: start; display: flex; align-items: center; gap: 8px; padding: 4px 14px 4px 4px; border-radius: 999px;
+    background: rgba(20, 18, 40, 0.6); border: 3px solid var(--teddy-l); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+  .pcard.m { border-color: var(--tommy-l); }
+  .pcard.two { border-color: #fff; }
+  .pcard .faces { display: flex; }
+  .pcard .face { width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 50% 35%, #e8f4ff, var(--teddy)); object-fit: cover; }
+  .pcard .face.m { background: radial-gradient(circle at 50% 35%, #e9fff6, var(--tommy)); }
+  .pcard .faces .face + .face { margin-left: -12px; }
+  .pcard .score { display: block; font-family: var(--display); font-size: 20px; line-height: 1.05; text-shadow: 0 2px 0 rgba(0,0,0,0.45); }
+  .hearts { font-size: 14px; letter-spacing: 1px; white-space: nowrap; }
+  .mid { grid-column: 2; grid-row: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .mid .row { display: flex; gap: 8px; align-items: center; pointer-events: auto; }
+  .pill { font-family: var(--display); font-size: 16px; padding: 7px 16px; border-radius: 999px; background: rgba(20,18,40,0.6); border: 3px solid rgba(255,255,255,0.85);
+    text-shadow: 0 2px 0 rgba(0,0,0,0.4); white-space: nowrap; }
+  .pill b { color: var(--yellow); }
+  .pill.small { font-size: 12px; padding: 3px 12px; border-width: 2px; }
+  .ibtn { width: 44px; height: 44px; border-radius: 14px; font-size: 18px; background: rgba(20,18,40,0.55); border: 2px solid rgba(255,255,255,0.8); display: grid; place-items: center; }
+  .ibtn:active { transform: scale(0.94); }
+
+  /* the companion button: top right (the bottom belongs to the carts and fingers) */
+  #callBtn { grid-column: 3; grid-row: 1; justify-self: end; pointer-events: auto; position: relative; display: flex; align-items: center; gap: 8px; padding: 4px 16px 4px 4px;
+    border-radius: 999px; background: rgba(20,18,40,0.6); border: 3px solid var(--tommy-l); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+  #callBtn.t { border-color: var(--teddy-l); }
+  #callBtn .face { position: relative; width: 52px; height: 52px; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 50% 35%, #e9fff6, var(--tommy)); flex: none; }
+  #callBtn.t .face { background: radial-gradient(circle at 50% 35%, #e8f4ff, var(--teddy)); }
+  #callBtn .face img { width: 100%; height: 100%; object-fit: cover; }
+  #callBtn .face .five { position: absolute; inset: 0; display: grid; place-items: center; font-size: 30px; }
+  #callBtn .cool { position: absolute; inset: 0; border-radius: 50%; }
+  #callBtn em { font-style: normal; font-family: var(--display); font-size: 14px; line-height: 1.1; text-align: left; text-shadow: 0 2px 0 rgba(0,0,0,0.5); }
+  #callBtn em small { display: block; font-family: 'Rubik', sans-serif; font-weight: 700; font-size: 11px; opacity: 0.85; }
+  #callBtn:active { transform: scale(0.95); }
+  #callBtn.here { box-shadow: 0 0 18px var(--tommy); }
+  #callBtn.t.here { box-shadow: 0 0 18px var(--teddy); }
+  #superBar { position: absolute; right: max(12px, env(safe-area-inset-right)); top: 76px; display: flex; align-items: center; gap: 6px; font-size: 18px; }
+  #superBar i { width: 110px; height: 12px; border-radius: 7px; border: 2px solid #fff; background: rgba(20,18,40,0.6); overflow: hidden; }
+  #superBar b { display: block; height: 100%; background: linear-gradient(90deg, #ff9ad5, #ffe14a); transform-origin: left; }
+
+  /* the finger strip under the field */
+  #strip { position: fixed; left: 0; right: 0; bottom: 0; pointer-events: none; display: flex; justify-content: center; align-items: center; }
+  #strip span { font-family: var(--display); font-size: 13px; letter-spacing: 1px; opacity: 0.55; text-shadow: 0 2px 0 rgba(0,0,0,0.5); }
+
+  /* ---------- toasts and the wave banner ---------- */
+  #toasts { position: fixed; left: 0; right: 0; top: max(40vh, 150px); display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+  .toast { font-family: var(--display); font-size: clamp(15px, 2.4vw, 24px); text-align: center; padding: 5px 16px; border-radius: 16px;
+    background: rgba(20,18,40,0.66); border: 3px solid #fff; text-shadow: 0 3px 0 rgba(0,0,0,0.45); max-width: 92vw; }
+  .toast.huge { font-size: clamp(20px, 3.6vw, 36px); color: var(--yellow); }
+  .toast.t { border-color: var(--teddy-l); }
+  .toast.m { border-color: var(--tommy-l); }
+  #banner { position: fixed; left: 50%; top: 52%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; padding: 14px 30px 16px;
+    border-radius: 26px; background: rgba(20,18,40,0.7); border: 4px solid #fff; max-width: 88vw; }
+  #banner small { font-family: var(--display); font-size: 16px; color: var(--yellow); letter-spacing: 1px; }
+  #banner h2 { font-family: var(--display); font-size: clamp(26px, 5vw, 46px); font-weight: 400; line-height: 1.1; margin: 4px 0 6px; }
+  #banner p { font-weight: 700; font-size: clamp(14px, 2.1vw, 19px); opacity: 0.95; }
+
+  /* ---------- screens ---------- */
+  .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 18px;
+    background: radial-gradient(ellipse at center, rgba(20,18,40,0.25), rgba(20,18,40,0.72)); overflow-y: auto; }
+  .screen > * { flex-shrink: 0; }
+  .screen > :first-child { margin-top: auto; }
+  .screen > :last-child { margin-bottom: auto; }
+  .screen.high { background: radial-gradient(ellipse at 50% 30%, rgba(20,18,40,0.15), rgba(20,18,40,0.5)); }
+  .logo { font-family: var(--display); font-weight: 400; font-size: clamp(46px, 9.5vw, 104px); line-height: 0.95; letter-spacing: 1px; text-align: center;
+    color: #fff; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; text-shadow: 0 6px 0 var(--ink), 0 0 30px rgba(120,220,255,0.85); }
+  .logo .a { color: var(--yellow); }
+  .logo .b { color: #9fe8ff; }
+  .logo .c { color: var(--pink); }
+  .sub { font-weight: 800; font-size: clamp(16px, 2.6vw, 22px); text-shadow: 0 2px 0 rgba(0,0,0,0.5); margin-top: -4px; }
+  .picks { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+  .kid { width: 170px; padding: 10px 10px 12px; border-radius: 24px; background: rgba(20,18,40,0.6); border: 4px solid var(--teddy-l); display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .kid.m { border-color: var(--tommy-l); }
+  .kid.pick { transform: scale(1.05); }
+  .kid img { width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle at 50% 35%, #e8f4ff, var(--teddy)); }
+  .kid.m img { background: radial-gradient(circle at 50% 35%, #e9fff6, var(--tommy)); }
+  .kid b { font-family: var(--display); font-weight: 400; font-size: 26px; margin-top: 4px; }
+  .kid small { font-weight: 800; font-size: 13px; opacity: 0.85; }
+  .kid:hover, .kid:focus-visible, .big:hover, .big:focus-visible { box-shadow: 0 0 22px rgba(255,255,255,0.4); outline: none; }
+  .kid:active, .big:active { transform: scale(0.97); }
+  .big { font-family: var(--display); font-size: 24px; padding: 12px 28px; border-radius: 22px; background: linear-gradient(180deg, #ffe066, #ffb52e); color: var(--ink);
+    border: 4px solid var(--ink); box-shadow: 0 5px 0 var(--ink); display: inline-flex; align-items: center; gap: 10px; }
+  .big.two { background: linear-gradient(90deg, var(--teddy-l), var(--tommy-l)); }
+  .big.two img { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.6); }
+  .big small { display: block; font-family: 'Rubik', sans-serif; font-weight: 800; font-size: 12px; }
+  .big.ghost { background: rgba(255,255,255,0.85); }
+  .opts { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; }
+  .seg { display: flex; border-radius: 999px; overflow: hidden; border: 3px solid #fff; background: rgba(20,18,40,0.6); }
+  .seg button { font-family: var(--display); font-size: 15px; padding: 9px 16px; opacity: 0.6; }
+  .seg button.on { background: #fff; color: var(--ink); opacity: 1; }
+  .chip { font-family: var(--display); font-size: 15px; padding: 9px 16px; border-radius: 999px; border: 3px solid #fff; background: rgba(20,18,40,0.6); }
+  .chip b { color: var(--yellow); }
+  .keys { font-weight: 700; font-size: 13px; opacity: 0.9; text-align: center; max-width: 760px; line-height: 1.55; text-shadow: 0 2px 0 rgba(0,0,0,0.5); }
+  .keys kbd { font-family: inherit; background: rgba(255,255,255,0.18); border-radius: 6px; padding: 1px 6px; }
+  .best { font-family: var(--display); font-size: 15px; color: var(--yellow); text-shadow: 0 2px 0 rgba(0,0,0,0.5); }
+  .card { background: rgba(20,18,40,0.84); border: 4px solid #fff; border-radius: 28px; padding: 20px 28px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; max-width: 92vw; }
+  .card h2 { font-family: var(--display); font-weight: 400; font-size: clamp(28px, 6vw, 52px); line-height: 1; }
+  .card p { font-weight: 700; font-size: 17px; }
+  .card .row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .nums { font-family: var(--display); font-size: 18px; display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+  .nums span:last-child { color: var(--yellow); }
+
+  /* small phones */
+  @media (max-width: 640px) {
+    .pcard .face { width: 34px; height: 34px; }
+    .pcard .score { font-size: 15px; }
+    .pcard { padding-right: 10px; }
+    .hearts { font-size: 11px; }
+    .pill { font-size: 12px; padding: 5px 10px; }
+    .pill.small { font-size: 10px; padding: 2px 8px; }
+    .ibtn { width: 36px; height: 36px; font-size: 15px; }
+    #callBtn em { display: none; }
+    #callBtn { padding: 3px; }
+    #callBtn .face { width: 44px; height: 44px; }
+    #superBar { top: 60px; }
+    #superBar i { width: 70px; }
+    .kid { width: 136px; }
+    .kid img { width: 92px; height: 92px; }
+  }
+  /* short screens (a phone on its side): the HUD goes down the sides, next to the field */
+  @media (max-height: 520px) {
+    .screen { gap: 7px; padding: 8px; }
+    .logo { font-size: clamp(30px, 10vh, 56px); }
+    .sub { font-size: 15px; }
+    .kid { width: 140px; padding: 6px 8px 8px; border-radius: 18px; }
+    .kid img { width: 58px; height: 58px; }
+    .kid b { font-size: 20px; }
+    .big { font-size: 18px; padding: 8px 18px; }
+    .big.two img { width: 32px; height: 32px; }
+    .keys { display: none; }
+    .card { padding: 12px 18px; gap: 8px; }
+    .card h2 { font-size: clamp(24px, 9vh, 38px); }
+    #banner { padding: 8px 20px 10px; }
+    .top { grid-template-columns: auto 1fr auto; }
+    .mid { grid-column: 3; grid-row: 2; align-items: flex-end; }
+    #toasts { top: 30vh; }
+    #superBar { top: auto; bottom: 40px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+
+<div id="hud" class="hidden">
+  <div class="top">
+    <div class="pcard" id="pcard"><span class="faces"><img class="face" id="faceA" alt=""><img class="face m" id="faceB" alt=""></span><div><b class="score" id="score">0</b><span class="hearts" id="hearts"></span></div></div>
+    <div class="mid">
+      <div class="row">
+        <button class="ibtn" id="btnPause" title="Pause (P)">❚❚</button>
+        <div class="pill">WAVE <b id="waveNum">1</b></div>
+        <button class="ibtn" id="btnMute" title="Sound (M)">🔊</button>
+      </div>
+      <div class="pill small">HI-SCORE <b id="hiNum">0</b></div>
+    </div>
+    <button id="callBtn"><span class="face"><img alt=""><span class="five hidden">✋</span><span class="cool"></span></span><em></em></button>
+  </div>
+  <div id="superBar" class="hidden"><span>⭐</span><i><b></b></i></div>
+</div>
+
+<div id="strip" class="hidden"><span id="stripText"></span></div>
+<div id="toasts"></div>
+<div id="banner" class="hidden"><small id="bnNum"></small><h2 id="bnName"></h2><p id="bnTip"></p></div>
+
+<div id="title" class="screen">
+  <h1 class="logo" id="logo" data-no-lang></h1>
+  <p class="sub" id="subtitle"></p>
+  <div class="picks">
+    <button class="kid t" data-hero="teddy"><img alt=""><b>TEDDY</b><small>1 PLAYER</small></button>
+    <button class="kid m" data-hero="tommy"><img alt=""><b>TOMMY</b><small>1 PLAYER</small></button>
+  </div>
+  <button class="big two" id="btn2p"><img alt="" id="img2pT"><span>2 PLAYERS<small>Teddy + Tommy together</small></span><img alt="" id="img2pM"></button>
+  <div class="opts">
+    <div class="seg" id="segEasy"><button data-easy="1">🐣 EASY</button><button data-easy="0">🔥 NORMAL</button></div>
+    <button class="chip" id="btnWave">START AT WAVE <b id="startNum">1</b></button>
+    <button class="chip" id="btnMute2">🔊</button>
+  </div>
+  <p class="best" id="bestLine"></p>
+  <p class="keys" data-zh="按 <kbd>←</kbd> <kbd>→</kbd> 或 <kbd>A</kbd> <kbd>D</kbd> 移动大炮 · 按 <kbd>空格</kbd> 发射星星（按住一直发射）· 手指按住屏幕，大炮就会跑过去并且发射<br>双人：Teddy 用 <kbd>A</kbd> <kbd>D</kbd> <kbd>W</kbd>，Tommy 用 <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> · <kbd>T</kbd> 叫兄弟来帮忙 · <kbd>P</kbd> 暂停 · <kbd>M</kbd> 声音">
+    Slide the cannon with <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> · <kbd>Space</kbd> fires star-pops (hold to keep firing) · or put a finger down: the cannon rolls to it and fires<br>
+    2 players: Teddy <kbd>A</kbd> <kbd>D</kbd> <kbd>W</kbd>, Tommy <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> · <kbd>T</kbd> calls your brother · <kbd>P</kbd> pause · <kbd>M</kbd> sound
+  </p>
+</div>
+
+<div id="pause" class="screen hidden">
+  <div class="card">
+    <h2>PAUSED</h2>
+    <div class="row"><button class="big" id="btnResume">▶ PLAY</button></div>
+    <div class="row"><button class="big ghost" id="btnRestart">↻ START THIS WAVE AGAIN</button><button class="big ghost" id="btnMenu">🏠 MENU</button></div>
+  </div>
+</div>
+
+<div id="over" class="screen hidden">
+  <div class="card">
+    <h2>OH NO!</h2>
+    <p id="overText"></p>
+    <div class="row"><button class="big" id="btnKeep">KEEP GOING!</button><button class="big ghost" id="btnOverMenu">🏠 MENU</button></div>
+  </div>
+</div>
+
+<div id="win" class="screen high hidden">
+  <div class="card">
+    <h2>YOU DID IT!</h2>
+    <p id="winText"></p>
+    <div class="nums"><span id="winScore"></span><span id="winHi"></span></div>
+    <div class="row"><button class="big" id="btnAgain">PLAY AGAIN</button><button class="big ghost" id="btnWinMenu">🏠 MENU</button></div>
+  </div>
+</div>
+
+<script src="kit/three.min.js"></script>
+<script src="kit/gfx.js"></script>
+<script src="kit/people.js"></script>
+<script src="kit/roster.js"></script>
+<script src="kit/portraits.js"></script>
+<script src="kit/sound.js"></script>
+<script src="kit/lang.js"></script>
+<script src="kit/help.js"></script>
+<script src="js/title.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/checks.js"></script>
+<script src="js/art.js"></script>
+<script src="js/poses.js"></script>
+<script src="js/sfx.js"></script>
+<script src="js/view.js"></script>
+<script src="js/game.js"></script>
+<script src="js/playcheck.js"></script>
+<script src="js/keys.js"></script>
+<script src="js/zh.js"></script>
+</body>
+</html>

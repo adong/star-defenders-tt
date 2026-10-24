@@ -12,17 +12,17 @@
   const SD = (root.SD = root.SD || {});
   const DT = 1 / 120;
   const W = 26, H = 20;
-  const MUZZLE_Y = 2.5;          // star-pops leave the barrel here
+  const MUZZLE_Y = 3.0;          // star-pops leave the barrel here
   const CART_HW = 0.85;          // half the cannon cart's width
-  const HIT_TOP = 2.2;           // a sprinkle lower than this, over a cart, sprinkles that kid
-  const LAND_Y = 2.4;            // an alien's feet this low: it has landed
+  const HIT_TOP = 2.9;           // a sprinkle lower than this, over a cart, sprinkles that kid
+  const LAND_Y = 3.1;            // an alien's feet this low: it has landed
   const COL_DX = 2.1, ROW_DY = 1.6;
   const TOP_ROW_Y = H - 2.7;
   const SAUCER_Y = H - 0.9;
   const ALIEN_HW = 0.66, ALIEN_HH = 0.56;
   const EDGE = 0.9;              // the aliens turn around this close to the walls
   const STEP_DX = 0.5;
-  const CELL = 0.4, SH_COLS = 9, SH_ROWS = 5, SH_Y = 3.2;
+  const CELL = 0.4, SH_COLS = 9, SH_ROWS = 5, SH_Y = 4.0;
   const SHIELD_X = [1, 2, 3, 4].map((i) => (W * i) / 5);
   const SH_MASK = ['.#######.', '#########', '#########', '###...###', '##.....##']; // top row first
   const BEAM_HW = 0.95;
