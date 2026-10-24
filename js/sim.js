@@ -34,7 +34,7 @@
   const DIFF = {
     easy: { lives: 5, base: 0.62, fast: 0.15, dy: 0.45, sprGap: 3.6, sprMax: 1, sprV: 3.0, aim: 0, shots: 2, cool: 0.26, shotV: 22,
       speed: 9, saucerGap: [16, 22], saucerV: 3.4, regrow: true, waveSpeed: 0.03, startDrop: 0 },
-    normal: { lives: 3, base: 0.5, fast: 0.055, dy: 0.6, sprGap: 1.25, sprMax: 3, sprV: 5.2, aim: 0.4, shots: 1, cool: 0.3, shotV: 24,
+    normal: { lives: 3, base: 0.5, fast: 0.055, dy: 0.6, sprGap: 1.45, sprMax: 3, sprV: 4.4, aim: 0.3, shots: 1, cool: 0.3, shotV: 24,
       speed: 10.5, saucerGap: [14, 20], saucerV: 5, regrow: false, waveSpeed: 0.05, startDrop: 0.35 },
   };
 
@@ -404,7 +404,7 @@
       if (this.hitShield(k.x, k.y, -1)) { k.dead = true; continue; }
       if (k.y < HIT_TOP && k.y > 0.2) {
         for (const c of this.cannons) {
-          if (c.inv <= 0 && Math.abs(c.x - k.x) < CART_HW + 0.12 && this.state === 'play') {
+          if (c.inv <= 0 && Math.abs(c.x - k.x) < CART_HW && this.state === 'play') {
             k.dead = true;
             this.hitCannon(c, k.x);
             break;
@@ -612,22 +612,28 @@
     }
     const u = s.saucer;
     if (u && cols.length > 3 && Math.abs(u.x - p.x) < 4) { const lead = u.vx * ((u.y - 2.5) / D.shotV); if (Math.abs(u.x + lead - p.x) < 0.4) fire = true; }
-    // sprinkles: find a spot where nothing will land on us in time
+    // sprinkles: go somewhere (and by a way) where nothing will be low enough to hit while we're under it
+    const sp = D.speed * 1.3, reach = CART_HW + 0.3;
     const danger = (x) => {
       for (const k of s.sprinkles) {
-        const tLand = (k.y - HIT_TOP) / -k.vy;
-        if (tLand < 0) continue;
-        const tGet = Math.abs(x - p.x) / D.speed;
-        if (Math.abs(k.x - x) < CART_HW + 0.55 && tLand < tGet + 0.9) return true;
+        if (k.y < 0.2) continue;
+        const v = -k.vy, tIn = Math.max(0, (k.y - HIT_TOP) / v) - 0.15, tOut = (k.y - 0.2) / v + 0.15;
+        const from = Math.abs(k.x - p.x);
+        let a, b; // when we're under it
+        if (Math.abs(k.x - x) < reach) { a = Math.max(0, (from - reach) / sp); b = Infinity; } // we stop under it
+        else if ((k.x - p.x) * (x - k.x) > 0 || from < reach) { a = Math.max(0, (from - reach) / sp); b = (from + reach) / sp; } // we pass under it
+        else continue;
+        if (tIn < b && tOut > a) return true;
       }
       return false;
     };
-    if (danger(tx) || danger(p.x)) {
+    if (danger(tx)) {
       let pick = null;
-      for (const d of [0, 1.2, -1.2, 2.2, -2.2, 3.4, -3.4, 4.6, -4.6, 6, -6]) {
+      for (const d of [1.2, -1.2, 2.2, -2.2, 3.4, -3.4, 4.6, -4.6, 6, -6, 8, -8]) {
         const x = clamp(tx + d, 1.1, W - 1.1);
         if (!danger(x)) { pick = x; break; }
       }
+      if (pick === null) for (const d of [2, -2, 4, -4, 7, -7]) { const x = clamp(p.x + d, 1.1, W - 1.1); if (!danger(x)) { pick = x; break; } }
       if (pick !== null) { tx = pick; fire = fire && Math.abs(p.x - tx) < 0.45; }
     }
     if (this.o.idle) fire = false;
