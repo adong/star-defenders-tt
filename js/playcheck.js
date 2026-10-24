@@ -63,7 +63,7 @@
             if (other && Math.abs(g.sim.player(other).x - ox) > 1e-6) bad.push(`wave ${w}: ${r}/${l} also moved ${other}`);
           }
         }
-        check(`direction ${mode === '2p' ? '2P' : '1P ' + hero}`, !bad.length, bad.length ? bad.slice(0, 4).join('; ') : `→/← ${mode === '1p' ? 'and D/A ' : ''}move the right way on screen on all ${SD.WAVES.length} waves`);
+        check(`direction ${mode === '2p' ? '2P' : '1P ' + hero}`, !bad.length, bad.length ? bad.slice(0, 4).join('; ') : `${mode === '1p' ? '→/← and D/A' : "Teddy's D/A and Tommy's →/← (each only his own cart)"} move the right way on screen on all ${SD.WAVES.length} waves`);
       }
 
       // ---------------------------------------------------------------- fire

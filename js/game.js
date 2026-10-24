@@ -551,6 +551,7 @@
     keepAwake() { G.keepAwake = true; },
     start(wave = 1, mode = '1p', hero = 'teddy', easy = true) { G.easy = easy; startGame(mode, hero, wave - 1); return this.state(); },
     title() { toTitle(); },
+    demo(wave = 1) { toTitle(); startDemo(wave - 1); },
     call() { callBuddy(); },
     pause, resume, keepGoing,
     showTouch(on = true) { G.touchOn = on; layoutHud(); },

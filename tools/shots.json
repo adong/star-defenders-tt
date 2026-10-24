@@ -1,0 +1,4 @@
+[
+ { "label": "prefs", "js": "localStorage.setItem('claudeGames.muted', '1'); localStorage.removeItem('claudeGames.lang'); localStorage.removeItem('starDefendersTT.v1'); location.reload(); 'reload'", "wait": 4000 },
+ { "label": "title", "js": "game.keepAwake(); game.demo(7); game.step(9, { draw: false }); game.step(0.05); JSON.stringify(game.G.demo.sim.state)", "wait": 600, "shot": "screenshot" }
+]
